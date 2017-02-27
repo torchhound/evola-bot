@@ -1,0 +1,23 @@
+{
+  "name": "evola-bot",
+  "version": "1.0.0",
+  "description": "A Julius Evola markov bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/botTests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/torchhound/evolaBot.git"
+  },
+  "author": "torchhound",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/torchhound/evolaBot/issues"
+  },
+  "homepage": "https://github.com/torchhound/evolaBot#readme",
+  "dependencies": {
+    "markov-strings": "^1.3.2",
+    "twitter": "^1.7.0"
+  }
+}
