@@ -1,10 +1,10 @@
-var assert = require('assert');
+var assert = require('chai').assert
 var index = require('../index');
 
 describe('Payload', function() {
   describe('#payload()', function() {
     it('should return a string', function() {
-      assert.equal(String, index.payload());
+      assert.typeOf(index.payload(), 'string');
     });
   });
 });

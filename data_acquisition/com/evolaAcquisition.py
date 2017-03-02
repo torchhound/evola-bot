@@ -56,7 +56,7 @@ def cleanHtml(evolaTxt):
 	h.ignore_images = True
 
 	for line in evolaTxt:
-		rHtml = h.handle(line).encode('utf8') #TODO change encoding
+		rHtml = h.handle(line).encode('ascii') #TODO change encoding
 		md.append(str(rHtml))
 
 	return md

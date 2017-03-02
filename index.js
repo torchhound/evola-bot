@@ -12,7 +12,7 @@ var client = new Twitter({
   access_token_secret: config.twitter.access_token_secret
 });
 
-const evolaTxt = fs.readFileSync('./data_acquisition/com/evola.txt', 'utf8');
+const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8');
 const data = [{'string':evolaTxt}];
 const options = {
 	maxLength: 140,
@@ -20,12 +20,12 @@ const options = {
 	minScore: 20
 };
 const twelveHours = 43200000;
-const markov = new Markov(data);//, options);
+const markov = new Markov(data, options);
 
 exports.payload = function() {
 	markov.buildCorpusSync();
 	const result = markov.generateSentenceSync();
-	return result;
+	return result; //result.string?
 };
 
 //Sends a markov generated tweet
@@ -40,19 +40,20 @@ exports.tweet = function() {
   		console.log(response);
   		return true;
 	});
+	return false;
 };
 
 //Activates tweet() every 12 hours, listens for "tweet" on stdin and activates tweet() on command
 function timedTweet() {
 	setInterval(function() {
-  		tweet();
+  		exports.tweet();
 	}, twelveHours);
 	process.stdin.resume();
 	process.stdin.setEncoding('utf8');
  
 	process.stdin.on('data', function (input) {
  		if(input == "tweet") {
- 			tweet();
+ 			exports.tweet();
  		};
 	});
 };
