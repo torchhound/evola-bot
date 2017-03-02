@@ -3,6 +3,8 @@ const fs = require('fs');
 var Twitter = require('twitter');
 var config = require('./config');
 
+var exports = module.exports = {};
+
 var client = new Twitter({
   consumer_key: config.twitter.consumer_key,
   consumer_secret: config.twitter.consumer_secret,
@@ -10,23 +12,33 @@ var client = new Twitter({
   access_token_secret: config.twitter.access_token_secret
 });
 
-const data = fs.readFileSync('/data_acquisition/evola.txt');
+const evolaTxt = fs.readFileSync('./data_acquisition/com/evola.txt', 'utf8');
+const data = [{'string':evolaTxt}];
 const options = {
 	maxLength: 140,
 	minWords: 10,
-	minScore: 25
+	minScore: 20
 };
 const twelveHours = 43200000;
-const markov = new Markov(data, options);
+const markov = new Markov(data);//, options);
 
-//Sends a markov generated tweet
-function tweet() {
+exports.payload = function() {
 	markov.buildCorpusSync();
 	const result = markov.generateSentenceSync();
-	client.post('statuses/update', {status: result},  function(error, tweet, response) {
-  		if(error) throw error;
+	return result;
+};
+
+//Sends a markov generated tweet
+exports.tweet = function() {
+	var payload = exports.payload();
+	client.post('statuses/update', {status: payload},  function(error, tweet, response) {
+  		if(error) {
+  			console.log(error);
+  			return false;
+  		};
   		console.log(tweet);  
-  		console.log(response);  
+  		console.log(response);
+  		return true;
 	});
 };
 
