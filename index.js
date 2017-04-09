@@ -12,20 +12,24 @@ var client = new Twitter({
   access_token_secret: config.twitter.access_token_secret
 });
 
-const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8');
+const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8'); //type error line.split if encoding is not included
 const data = [{'string':evolaTxt}];
 const options = {
 	maxLength: 140,
 	minWords: 10,
-	minScore: 20
+	minScore: 20,
 };
 const twelveHours = 43200000;
-const markov = new Markov(data, options);
+const markov = new Markov(data, options); //Error: Cannot build sentence with current corpus and options
 
 exports.payload = function() {
-	markov.buildCorpusSync();
+	console.log("start payload");
+	markov.buildCorpusSync(); //TODO(torchhound) buildCorpus once at program launch or every time the function is called?
+	console.log("after buildCorpus");
 	const result = markov.generateSentenceSync();
-	return result; //result.string?
+	console.log("after generateSentence");
+	console.log("result.string: "+result.string);
+	return result.string;
 };
 
 //Sends a markov generated tweet
@@ -51,11 +55,12 @@ function timedTweet() {
 	process.stdin.resume();
 	process.stdin.setEncoding('utf8');
  
-	process.stdin.on('data', function (input) {
+	process.stdin.on('data', function (input) { //TODO(torchhound) test this
  		if(input == "tweet") {
  			exports.tweet();
  		};
 	});
 };
 
-timedTweet();
+//timedTweet();
+exports.payload();
