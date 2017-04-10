@@ -16,7 +16,7 @@ const data = [];
 const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8'); 
 const corpus = evolaTxt.toString().split(".");
 for(var i = 0; i < (corpus.length-1); i++) { //TODO(torchhound) further corpus cleaning?
-  corpus[i] = corpus[i].toString().replace(/[^a-z0-9]/gmi, " ").replace(/\s+/g, " "); //.replace(/[^a-z0-9]/gmi, " ")
+  corpus[i] = corpus[i].toString().replace(/[^a-z0-9]/gmi, " ").replace(/\s+/g, " ");
   data.push(corpus[i]);
 };
 const options = { //TODO(torchhound) adjust options
@@ -39,23 +39,20 @@ exports.payload = function() {
 //Sends a markov generated tweet
 exports.tweet = function() {
 	var payload = exports.payload();
-	if(payload === false) {
-		return false;
-	};
 	client.post('statuses/update', {status: payload},  function(error, tweet, response) {
   		if(error) {
   			console.log(error);
   			return false;
   		};
-  		console.log(tweet);  
-  		console.log(response);
+  		console.log("tweet: "+JSON.stringify(tweet));  
+  		console.log("response: "+JSON.stringify(response));
   		return true;
 	});
 	return false;
 };
 
 //Activates tweet() every 12 hours, listens for "tweet" on stdin and activates tweet() on command
-function timedTweet() {
+function timedTweet() { 
 	exports.tweet();
 	setInterval(function() {
   		exports.tweet(); //TODO(torchhound) on false?
@@ -70,6 +67,6 @@ function timedTweet() {
 	});*/
 };
 
-//timedTweet();
-//exports.tweet();
-exports.payload();
+//Uncomment this if you are not using a cron job
+//timedTweet(); 
+exports.tweet();
