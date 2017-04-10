@@ -1,4 +1,4 @@
-const Markov = require('markov-strings');
+const Markov = require('markov');
 const fs = require('fs');
 var Twitter = require('twitter');
 var config = require('./config');
@@ -12,29 +12,29 @@ var client = new Twitter({
   access_token_secret: config.twitter.access_token_secret
 });
 
-const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8'); //type error line.split if encoding is not included
+const evolaTxt = fs.createReadStream('./data_acquisition/evolaArch.txt', 'utf8'); 
 const data = [{'string':evolaTxt}];
-const options = {
-	maxLength: 140,
-	minWords: 10,
-	minScore: 20,
-};
 const twelveHours = 43200000;
-const markov = new Markov(data, options); //Error: Cannot build sentence with current corpus and options
+const markov = new Markov(); //TODO(torchhound) specify order?
 
 exports.payload = function() {
 	console.log("start payload");
-	markov.buildCorpusSync(); //TODO(torchhound) buildCorpus once at program launch or every time the function is called?
-	console.log("after buildCorpus");
-	const result = markov.generateSentenceSync();
-	console.log("after generateSentence");
-	console.log("result.string: "+result.string);
-	return result.string;
+	markov.seed(evolaTxt, function() {
+		console.log("after seed");
+		const result = markov.respond();
+		console.log("after respond");
+		console.log("markov.respond: "+result);
+		return result;
+	}); 
+	return false;
 };
 
 //Sends a markov generated tweet
 exports.tweet = function() {
 	var payload = exports.payload();
+	if(payload === false) {
+		return false;
+	};
 	client.post('statuses/update', {status: payload},  function(error, tweet, response) {
   		if(error) {
   			console.log(error);
@@ -50,14 +50,14 @@ exports.tweet = function() {
 //Activates tweet() every 12 hours, listens for "tweet" on stdin and activates tweet() on command
 function timedTweet() {
 	setInterval(function() {
-  		exports.tweet();
+  		exports.tweet(); //TODO(torchhound) on false?
 	}, twelveHours);
 	process.stdin.resume();
 	process.stdin.setEncoding('utf8');
  
 	process.stdin.on('data', function (input) { //TODO(torchhound) test this
  		if(input == "tweet") {
- 			exports.tweet();
+ 			exports.tweet(); //TODO(torchhound) on false?
  		};
 	});
 };

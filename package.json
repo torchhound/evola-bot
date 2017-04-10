@@ -11,14 +11,14 @@
     "url": "git+https://github.com/torchhound/evolaBot.git"
   },
   "author": "torchhound",
-  "license": "ISC",
+  "license": "GPL",
   "bugs": {
     "url": "https://github.com/torchhound/evolaBot/issues"
   },
   "homepage": "https://github.com/torchhound/evolaBot#readme",
   "dependencies": {
     "chai": "^3.5.0",
-    "markov-strings": "^1.3.2",
+    "markov": "0.0.7",
     "mocha": "^3.2.0",
     "twitter": "^1.7.0"
   }
