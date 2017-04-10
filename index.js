@@ -12,15 +12,19 @@ var client = new Twitter({
   access_token_secret: config.twitter.access_token_secret
 });
 
-const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8'); //type error line.split if encoding is not included
-const data = [{'string':evolaTxt}];
-const options = {
-	maxLength: 140,
-	minWords: 10,
-	minScore: 20,
+const data = [];
+const evolaTxt = fs.readFileSync('./data_acquisition/evolaArch.txt', 'utf8'); 
+const corpus = evolaTxt.toString().split(".");
+for(var i = 0; i < (corpus.length-1); i++) { //TODO(torchhound) further corpus cleaning?
+  corpus[i] = corpus[i].toString().replace(/[^a-z0-9]/gmi, " ").replace(/\s+/g, " "); //.replace(/[^a-z0-9]/gmi, " ")
+  data.push(corpus[i]);
 };
-const twelveHours = 43200000;
-const markov = new Markov(data, options); //Error: Cannot build sentence with current corpus and options
+const options = { //TODO(torchhound) adjust options
+	maxLength: 140,
+	minScore: 25,
+};
+const threeHours = 10800000;
+const markov = new Markov(data, options);
 
 exports.payload = function() {
 	console.log("start payload");
@@ -35,6 +39,9 @@ exports.payload = function() {
 //Sends a markov generated tweet
 exports.tweet = function() {
 	var payload = exports.payload();
+	if(payload === false) {
+		return false;
+	};
 	client.post('statuses/update', {status: payload},  function(error, tweet, response) {
   		if(error) {
   			console.log(error);
@@ -49,18 +56,20 @@ exports.tweet = function() {
 
 //Activates tweet() every 12 hours, listens for "tweet" on stdin and activates tweet() on command
 function timedTweet() {
+	exports.tweet();
 	setInterval(function() {
-  		exports.tweet();
-	}, twelveHours);
+  		exports.tweet(); //TODO(torchhound) on false?
+	}, threeHours);/*
 	process.stdin.resume();
 	process.stdin.setEncoding('utf8');
  
 	process.stdin.on('data', function (input) { //TODO(torchhound) test this
  		if(input == "tweet") {
- 			exports.tweet();
+ 			exports.tweet(); //TODO(torchhound) on false?
  		};
-	});
+	});*/
 };
 
 //timedTweet();
+//exports.tweet();
 exports.payload();
