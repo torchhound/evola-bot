@@ -16,12 +16,13 @@ If you use a cron job `node index.js` will suffice otherwise uncomment `//timedT
 
 ## TODO
 
-- Clean up corpus
-	- Remove page headers and footers
-	- Remove page numbers
-	- Remove urls
-	- Removing footnotes would be nice but difficult
-- Handle `tweet()` false
-- Optimize buildCorpus?
-- Adjust Markov options
-- Publish to npm
+- [ ] Clean up corpus
+	- [ ] Remove page headers and footers
+	- [ ] Remove page numbers
+	- [ ] Remove urls
+	- [ ] Removing footnotes would be nice but difficult
+- [ ] Handle `tweet()` false
+- [ ] Optimize buildCorpus?
+- [ ] Adjust Markov options
+- [ ] Publish to npm
+- [ ] Fix `tweet()` unit test
